@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="CustomBottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemIconSize">24dp</item>
+        <item name="itemIconPadding">6dp</item>
+    </style>
+
+    <style name="CustomBottomNavTextActive" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="CustomBottomNavTextInactive" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">11sp</item>
+    </style>
+
+</resources>

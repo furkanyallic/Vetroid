@@ -10,7 +10,6 @@
     <!-- Fragment Container -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container"
-        android:name="com.example.vetroid.HomeFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/bottom_nav"
@@ -21,13 +20,16 @@
     <!-- Material 3 Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
+        style="@style/CustomBottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:background="#908F98C8"
+        app:itemTextAppearanceActive="@style/CustomBottomNavTextActive"
+        app:itemTextAppearanceInactive="@style/CustomBottomNavTextInactive"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_nav_menu" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

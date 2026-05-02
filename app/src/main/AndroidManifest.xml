@@ -13,6 +13,18 @@
         android:theme="@style/Theme.Vetroid"
         tools:targetApi="31">
         <activity
+            android:name=".ConstraintsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ActionsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TriggersActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddMacroActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
