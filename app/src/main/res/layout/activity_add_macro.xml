@@ -21,15 +21,38 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Makro İsmi Girişi -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilMacroName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:hint="Makro İsmi"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etMacroName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLength="50" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
     <!-- ScrollView for Content -->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/tilMacroName">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,41 +67,45 @@
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="#42988a">
+                    android:background="#42988a"
+                    android:orientation="vertical">
                     <!-- Header -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="16dp"
-                        android:gravity="center_vertical">
+                        android:padding="16dp">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Tetikleyiciler"
+                            android:textColor="@android:color/white"
                             android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/white" />
+                            android:textStyle="bold" />
+
                         <ImageButton
                             android:id="@+id/btnAddTrigger"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:src="@drawable/ic_add_circle"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:contentDescription="Tetikleyici Ekle"
-                            android:tint="@android:color/white" />
+                            android:src="@drawable/ic_add_circle"
+                            app:tint="@android:color/white" />
                     </LinearLayout>
                     <!-- Content -->
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@android:color/white"
-                        android:alpha="0.3" />
+                        android:alpha="0.3"
+                        android:background="@android:color/white" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
@@ -97,41 +124,45 @@
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="#42988a">
+                    android:background="#42988a"
+                    android:orientation="vertical">
                     <!-- Header -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="16dp"
-                        android:gravity="center_vertical">
+                        android:padding="16dp">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Eylemler"
+                            android:textColor="@android:color/white"
                             android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/white" />
+                            android:textStyle="bold" />
+
                         <ImageButton
                             android:id="@+id/btnAddAction"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:src="@drawable/ic_add_circle"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:contentDescription="Eylem Ekle"
-                            android:tint="@android:color/white" />
+                            android:src="@drawable/ic_add_circle"
+                            app:tint="@android:color/white" />
                     </LinearLayout>
                     <!-- Content -->
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@android:color/white"
-                        android:alpha="0.3" />
+                        android:alpha="0.3"
+                        android:background="@android:color/white" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
@@ -150,41 +181,45 @@
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="#42988a">
+                    android:background="#42988a"
+                    android:orientation="vertical">
                     <!-- Header -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="16dp"
-                        android:gravity="center_vertical">
+                        android:padding="16dp">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Kısıtlamalar"
+                            android:textColor="@android:color/white"
                             android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/white" />
+                            android:textStyle="bold" />
+
                         <ImageButton
                             android:id="@+id/btnAddConstraint"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:src="@drawable/ic_add_circle"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:contentDescription="Kısıtlama Ekle"
-                            android:tint="@android:color/white" />
+                            android:src="@drawable/ic_add_circle"
+                            app:tint="@android:color/white" />
                     </LinearLayout>
                     <!-- Content -->
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@android:color/white"
-                        android:alpha="0.3" />
+                        android:alpha="0.3"
+                        android:background="@android:color/white" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
