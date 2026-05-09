@@ -26,6 +26,8 @@ class AddMacroActivity : AppCompatActivity() {
         private const val PREFS_NAME = "vetroid_prefs"
         private const val KEY_SCENARIO_ID = "current_scenario_id"
         private const val KEY_MACRO_NAME = "current_macro_name"
+        private const val KEY_GEOFENCE_TRIGGER_ID = "current_geofence_trigger_id"
+        private const val KEY_TIME_TRIGGER_ID = "current_time_trigger_id"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,12 +138,19 @@ class AddMacroActivity : AppCompatActivity() {
                     .putString(KEY_MACRO_NAME, macroName)
                     .apply()
 
-                // Mevcut trigger var mı kontrol et (varsa ID'sini gönder)
+                // Mevcut trigger var mı kontrol et (varsa ID'sini gönder ve kaydet)
                 var existingTriggerId = 0L
                 if (triggerType != null) {
                     val existingTrigger = database.triggerDao().getTriggerByScenarioAndType(scenarioId, triggerType)
                     existingTriggerId = existingTrigger?.id ?: 0L
                     android.util.Log.d("AddMacroActivity", "✅ Mevcut Trigger ID: $existingTriggerId (Tür: $triggerType)")
+                    
+                    // Trigger ID'yi SharedPreferences'a kaydet
+                    if (triggerType == "GEOFENCE") {
+                        prefs.edit().putLong(KEY_GEOFENCE_TRIGGER_ID, existingTriggerId).apply()
+                    } else if (triggerType == "TIME") {
+                        prefs.edit().putLong(KEY_TIME_TRIGGER_ID, existingTriggerId).apply()
+                    }
                 }
 
                 val intent = Intent(this@AddMacroActivity, activityClass)

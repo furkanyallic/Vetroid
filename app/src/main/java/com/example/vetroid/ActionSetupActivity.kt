@@ -91,7 +91,9 @@ class ActionSetupActivity : AppCompatActivity() {
                     Toast.makeText(this@ActionSetupActivity, "Hata: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
+
         }
+
     }
 }
 

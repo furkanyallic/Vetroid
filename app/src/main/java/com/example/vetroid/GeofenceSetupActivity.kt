@@ -213,5 +213,6 @@ class GeofenceSetupActivity : AppCompatActivity(), OnMapReadyCallback {
                 Toast.makeText(this@GeofenceSetupActivity, "Database hatası: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
+
     }
 }

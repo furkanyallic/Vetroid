@@ -9,6 +9,13 @@
     <!-- Do Not Disturb Permission (Sessiz Mod için) -->
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
+    <!-- Exact Alarm Permissions -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
+    <!-- Background Location (for Geofence) -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -44,6 +51,9 @@
             android:name=".ActionSetupActivity"
             android:exported="false" />
         <activity
+            android:name=".TimeSetupActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -56,7 +66,12 @@
         <!-- Geofence BroadcastReceiver -->
         <receiver
             android:name=".receiver.GeofenceBroadcastReceiver"
-            android:exported="false" />
+            android:exported="true" />
+
+        <!-- Time Trigger BroadcastReceiver -->
+        <receiver
+            android:name=".receiver.TimeTriggerReceiver"
+            android:exported="true" />
 
     </application>
 

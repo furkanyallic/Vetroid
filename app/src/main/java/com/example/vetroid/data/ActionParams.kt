@@ -20,15 +20,22 @@ data class ActionParams(
     }
 
     companion object {
-        fun fromJson(json: String): ActionParams {
-            val obj = JSONObject(json)
-            return ActionParams(
-                mode = obj.optString("mode", null).takeIf { it.isNotEmpty() },
-                wifiEnabled = if (obj.has("wifiEnabled")) obj.getBoolean("wifiEnabled") else null,
-                packageName = obj.optString("packageName", null).takeIf { it.isNotEmpty() },
-                notificationTitle = obj.optString("notificationTitle", null).takeIf { it.isNotEmpty() },
-                notificationMessage = obj.optString("notificationMessage", null).takeIf { it.isNotEmpty() }
-            )
+        fun fromJson(json: String?): ActionParams {
+            if (json.isNullOrEmpty()) {
+                return ActionParams()
+            }
+            try {
+                val obj = JSONObject(json)
+                return ActionParams(
+                    mode = obj.optString("mode", null).takeIf { it.isNotEmpty() },
+                    wifiEnabled = if (obj.has("wifiEnabled")) obj.getBoolean("wifiEnabled") else null,
+                    packageName = obj.optString("packageName", null).takeIf { it.isNotEmpty() },
+                    notificationTitle = obj.optString("notificationTitle", null).takeIf { it.isNotEmpty() },
+                    notificationMessage = obj.optString("notificationMessage", null).takeIf { it.isNotEmpty() }
+                )
+            } catch (e: Exception) {
+                return ActionParams()
+            }
         }
     }
 }

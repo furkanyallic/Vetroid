@@ -20,7 +20,9 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         const val ACTION_GEOFENCE_TRIGGER = "com.example.vetroid.GEOFENCE_TRIGGER"
     }
 
+
     override fun onReceive(context: Context, intent: Intent) {
+        Log.d(TAG, "🔔 GEOFENCE RECEIVER ÇALIŞTI")
         val geofencingEvent = GeofencingEvent.fromIntent(intent) ?: return
 
         if (geofencingEvent.hasError()) {

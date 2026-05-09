@@ -57,5 +57,7 @@ class ActionsActivity : AppCompatActivity() {
             actionId = lastSilentAction?.id ?: 0
             Log.d("ActionsActivity", "En son SILENT actionId: $actionId")
         }
+
+
     }
 }
