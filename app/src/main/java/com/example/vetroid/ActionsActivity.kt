@@ -17,6 +17,15 @@ class ActionsActivity : AppCompatActivity() {
     private var scenarioId: Long = 0
     private var silentActionId: Long = 0
     private var appActionId: Long = 0
+    private var notificationActionId: Long = 0
+    private var smsActionId: Long = 0
+
+    companion object {
+        private const val TAG = "ActionsActivity"
+        private const val ACTION_TYPE_SILENT = "SILENT_MODE"
+        private const val ACTION_TYPE_NOTIFICATION = "NOTIFICATION"
+        private const val ACTION_TYPE_SMS_SEND = "SMS_SEND"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +68,21 @@ class ActionsActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        findViewById<MaterialCardView>(R.id.cardBildirim).setOnClickListener { }
+        findViewById<MaterialCardView>(R.id.cardBildirim).setOnClickListener {
+            Log.d(TAG, "Notification card clicked, actionId: $notificationActionId")
+            val intent = Intent(this, NotificationActionSetupActivity::class.java)
+            intent.putExtra("scenario_id", scenarioId)
+            intent.putExtra("action_id", notificationActionId)
+            startActivity(intent)
+        }
+
+        findViewById<MaterialCardView>(R.id.cardSms).setOnClickListener {
+            Log.d(TAG, "SMS card clicked, actionId: $smsActionId")
+            val intent = Intent(this, SmsActionSetupActivity::class.java)
+            intent.putExtra("scenario_id", scenarioId)
+            intent.putExtra("action_id", smsActionId)
+            startActivity(intent)
+        }
     }
 
     private fun loadLastActions() {
@@ -68,12 +91,9 @@ class ActionsActivity : AppCompatActivity() {
             val actions = database.actionDao().getActionsByScenarioSync(scenarioId)
             silentActionId = actions.lastOrNull { it.type == ACTION_TYPE_SILENT }?.id ?: 0
             appActionId = actions.lastOrNull { it.type == AppActionSetupActivity.ACTION_TYPE_APP_LAUNCH }?.id ?: 0
-            Log.d(TAG, "Last silent actionId: $silentActionId, app actionId: $appActionId")
+            notificationActionId = actions.lastOrNull { it.type == ACTION_TYPE_NOTIFICATION }?.id ?: 0
+            smsActionId = actions.lastOrNull { it.type == ACTION_TYPE_SMS_SEND }?.id ?: 0
+            Log.d(TAG, "Last actions - silent: $silentActionId, app: $appActionId, notification: $notificationActionId, sms: $smsActionId")
         }
-    }
-
-    companion object {
-        private const val TAG = "ActionsActivity"
-        private const val ACTION_TYPE_SILENT = "SILENT_MODE"
     }
 }

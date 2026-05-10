@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
+import android.telephony.SmsManager
 import android.util.Log
 import com.example.vetroid.data.Action
 import com.example.vetroid.data.ActionParams
@@ -18,6 +19,8 @@ class ActionExecutor(private val context: Context) {
         const val ACTION_TYPE_SILENT = "SILENT_MODE"
         const val ACTION_TYPE_APP_LAUNCH = "APP_LAUNCH"
         const val ACTION_TYPE_APP_CLOSE = "APP_CLOSE"
+        const val ACTION_TYPE_NOTIFICATION = "NOTIFICATION"
+        const val ACTION_TYPE_SMS_SEND = "SMS_SEND"
     }
 
     fun executeAction(action: Action) {
@@ -27,6 +30,8 @@ class ActionExecutor(private val context: Context) {
             ACTION_TYPE_SILENT -> executeSilentMode(action.params)
             ACTION_TYPE_APP_LAUNCH -> executeAppLaunch(action.params)
             ACTION_TYPE_APP_CLOSE -> executeAppClose(action.params)
+            ACTION_TYPE_NOTIFICATION -> executeNotification(action.params)
+            ACTION_TYPE_SMS_SEND -> executeSms(action.params)
             else -> Log.w(TAG, "Unknown action type: ${action.type}")
         }
     }
@@ -103,6 +108,71 @@ class ActionExecutor(private val context: Context) {
             showNotification("Uygulama Kapatildi", "Uygulama durduruldu: $packageName")
         } catch (e: Exception) {
             Log.e(TAG, "App close error: ${e.message}", e)
+        }
+    }
+
+    private fun executeNotification(paramsJson: String) {
+        try {
+            val params = ActionParams.fromJson(paramsJson)
+            val title = params.notificationTitle ?: "Vetroid Bildirim"
+            val message = params.notificationMessage ?: ""
+
+            if (message.isEmpty()) {
+                Log.w(TAG, "Notification message is empty, skipping")
+                return
+            }
+
+            showNotification(title, message)
+            Log.d(TAG, "✅ Bildirim gösterildi: $title - $message")
+        } catch (e: Exception) {
+            Log.e(TAG, "Notification error: ${e.message}", e)
+        }
+    }
+
+    private fun executeSms(paramsJson: String) {
+        try {
+            val params = ActionParams.fromJson(paramsJson)
+            val phoneNumber = params.smsPhoneNumber
+            val message = params.smsMessage
+            val contactName = params.smsContactName
+
+            if (phoneNumber.isNullOrEmpty()) {
+                Log.e(TAG, "SMS phone number is empty, skipping")
+                showNotification("SMS Gonderilemedi", "Telefon numarasi yok")
+                return
+            }
+
+            if (message.isNullOrEmpty()) {
+                Log.e(TAG, "SMS message is empty, skipping")
+                return
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val smsManager = context.getSystemService(SmsManager::class.java)
+                if (message.length > 160) {
+                    val parts = smsManager.divideMessage(message)
+                    smsManager.sendMultipartTextMessage(phoneNumber, null, parts, null, null)
+                } else {
+                    smsManager.sendTextMessage(phoneNumber, null, message, null, null)
+                }
+            } else {
+                @Suppress("DEPRECATION")
+                val smsManager = SmsManager.getDefault()
+                if (message.length > 160) {
+                    val parts = smsManager.divideMessage(message)
+                    smsManager.sendMultipartTextMessage(phoneNumber, null, parts, null, null)
+                } else {
+                    smsManager.sendTextMessage(phoneNumber, null, message, null, null)
+                }
+            }
+
+            val displayName = contactName ?: "Bilinmeyen"
+            Log.d(TAG, "✅ SMS gonderildi: $displayName - $message")
+            showNotification("SMS Gonderildi", "Alici: $displayName")
+
+        } catch (e: Exception) {
+            Log.e(TAG, "SMS gonderme hatasi: ${e.message}", e)
+            showNotification("SMS Gonderilemedi", e.message ?: "Bilinmeyen hata")
         }
     }
 

@@ -313,6 +313,17 @@ class TimeSetupActivity : AppCompatActivity() {
                         Log.d("TimeSetupActivity", "⏱️ Alarm kuruluyor - Gün: ${schedule.day}, Saat: ${schedule.hour}:${schedule.minute}, TriggerId: $triggerId")
                         timeTriggerManager.scheduleAlarm(triggerId, schedule.day, schedule.hour, schedule.minute)
                     }
+                } else if (!isRecurring && triggerId > 0) {
+                    // Tek seferlik alarm kur
+                    Log.d("TimeSetupActivity", "⏱️ Tek seferlik alarm kuruluyor - ${selectedDay}.${selectedMonth}.${selectedYear} ${selectedHour}:${selectedMinute}, TriggerId: $triggerId")
+                    timeTriggerManager.scheduleOneTimeAlarm(
+                        triggerId,
+                        selectedYear,
+                        selectedMonth,
+                        selectedDay,
+                        selectedHour,
+                        selectedMinute
+                    )
                 }
                 
                 // Artık SharedPreferences'a gerek yok, database'den alıyoruz

@@ -19,19 +19,52 @@ class TimeTriggerReceiver : BroadcastReceiver() {
         const val ACTION_TIME_TRIGGER = "com.example.vetroid.TIME_TRIGGER"
         const val EXTRA_TRIGGER_ID = "trigger_id"
         const val EXTRA_DAY_OF_WEEK = "day_of_week"
+        const val EXTRA_YEAR = "year"
+        const val EXTRA_MONTH = "month"
+        const val EXTRA_DAY = "day"
+        const val DAY_OF_WEEK_ONCE = 0 // Tek seferlik trigger'ı belirtir
     }
 
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "🔔 TIME TRIGGER RECEIVER ÇALIŞTI - Intent: ${intent.action}")
         val triggerId = intent.getLongExtra(EXTRA_TRIGGER_ID, 0)
-        val dayOfWeek = intent.getIntExtra(EXTRA_DAY_OF_WEEK, 0)
+        val dayOfWeek = intent.getIntExtra(EXTRA_DAY_OF_WEEK, -1)
 
-        Log.d(TAG, "Time trigger tetiklendi! triggerId: $triggerId, day: $dayOfWeek")
+        Log.d(TAG, "Time trigger tetiklendi! triggerId: $triggerId, dayOfWeek: $dayOfWeek")
 
         if (triggerId > 0) {
             executeActionsForTimeTrigger(context, triggerId)
-            // Alarmı bir sonraki haftaya yeniden kur
-            rescheduleAlarm(context, triggerId, dayOfWeek)
+
+            // Tek seferlik mi? (dayOfWeek == 0)
+            if (dayOfWeek == DAY_OF_WEEK_ONCE) {
+                Log.d(TAG, "⏰ Tek seferlik alarm tetiklendi - trigger pasifleştirilecek")
+                deactivateTrigger(context, triggerId)
+            } else if (dayOfWeek > 0) {
+                // Tekrarlayan - bir sonraki haftaya yeniden kur
+                rescheduleAlarm(context, triggerId, dayOfWeek)
+            }
+        }
+    }
+
+    private fun deactivateTrigger(context: Context, triggerId: Long) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val database = AppDatabase.getDatabase(context)
+                val trigger = database.triggerDao().getTriggerById(triggerId)
+
+                if (trigger != null) {
+                    val updated = trigger.copy(isActive = false)
+                    database.triggerDao().update(updated)
+                    Log.d(TAG, "✅ Trigger pasifleştirildi: $triggerId")
+                }
+
+                // Alarm'ı iptal et
+                val timeTriggerManager = com.example.vetroid.trigger.TimeTriggerManager(context)
+                timeTriggerManager.cancelOneTimeAlarm(triggerId)
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Trigger pasifleştirme hatası: ${e.message}", e)
+            }
         }
     }
 

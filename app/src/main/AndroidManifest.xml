@@ -23,6 +23,15 @@
     <!-- Background Location (for Geofence) -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
+    <!-- SMS Permission -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
+    <!-- Contacts Permission -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -65,6 +74,12 @@
             android:exported="false" />
         <activity
             android:name=".AppPickerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NotificationActionSetupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SmsActionSetupActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
