@@ -1,5 +1,6 @@
 package com.example.vetroid.data
 
+import android.util.Log
 import org.json.JSONObject
 
 data class ActionParams(
@@ -21,21 +22,26 @@ data class ActionParams(
 
     companion object {
         fun fromJson(json: String?): ActionParams {
-            if (json.isNullOrEmpty()) {
-                return ActionParams()
-            }
-            try {
+            if (json.isNullOrEmpty()) return ActionParams()
+
+            return try {
                 val obj = JSONObject(json)
-                return ActionParams(
-                    mode = obj.optString("mode", null).takeIf { it.isNotEmpty() },
+                ActionParams(
+                    // optString(key) anahtar yoksa "" (boş string) döner, null dönmez.
+                    // takeIf ile boş değilse değerini alırız, boşsa null kalır.
+                    mode = obj.optString("mode").takeIf { it.isNotEmpty() },
                     wifiEnabled = if (obj.has("wifiEnabled")) obj.getBoolean("wifiEnabled") else null,
-                    packageName = obj.optString("packageName", null).takeIf { it.isNotEmpty() },
-                    notificationTitle = obj.optString("notificationTitle", null).takeIf { it.isNotEmpty() },
-                    notificationMessage = obj.optString("notificationMessage", null).takeIf { it.isNotEmpty() }
+                    packageName = obj.optString("packageName").takeIf { it.isNotEmpty() },
+                    notificationTitle = obj.optString("notificationTitle").takeIf { it.isNotEmpty() },
+                    notificationMessage = obj.optString("notificationMessage").takeIf { it.isNotEmpty() }
                 )
             } catch (e: Exception) {
-                return ActionParams()
+                Log.e("ActionParams", "❌ JSON parse hatası: ${e.message}")
+                ActionParams()
             }
         }
     }
 }
+
+
+

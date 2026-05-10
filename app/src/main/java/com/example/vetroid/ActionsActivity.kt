@@ -15,7 +15,8 @@ import kotlinx.coroutines.launch
 class ActionsActivity : AppCompatActivity() {
 
     private var scenarioId: Long = 0
-    private var actionId: Long = 0
+    private var silentActionId: Long = 0
+    private var appActionId: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,10 +24,7 @@ class ActionsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_actions)
 
         scenarioId = intent.getLongExtra("scenario_id", 0)
-        Log.d("ActionsActivity", "scenarioId: $scenarioId")
-
-        // Bu senaryoya ait en son SILENT_MODE action'ı bul
-        loadLastAction()
+        Log.d(TAG, "scenarioId: $scenarioId")
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)!!) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -34,30 +32,48 @@ class ActionsActivity : AppCompatActivity() {
             insets
         }
 
-        // Ses kartı - Sessiz Mod
+        setupListeners()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadLastActions()
+    }
+
+    private fun setupListeners() {
         findViewById<MaterialCardView>(R.id.cardSes).setOnClickListener {
-            Log.d("ActionsActivity", "Ses kartı tıklandı, actionId: $actionId")
+            Log.d(TAG, "Silent card clicked, actionId: $silentActionId")
             val intent = Intent(this, ActionSetupActivity::class.java)
             intent.putExtra("scenario_id", scenarioId)
-            intent.putExtra("action_id", actionId)
+            intent.putExtra("action_id", silentActionId)
             startActivity(intent)
         }
 
-        // Diğer kartlar (ileride doldurulacak)
         findViewById<MaterialCardView>(R.id.cardWifi).setOnClickListener { }
-        findViewById<MaterialCardView>(R.id.cardUygulama).setOnClickListener { }
+
+        findViewById<MaterialCardView>(R.id.cardUygulama).setOnClickListener {
+            Log.d(TAG, "App card clicked, actionId: $appActionId")
+            val intent = Intent(this, AppActionSetupActivity::class.java)
+            intent.putExtra("scenario_id", scenarioId)
+            intent.putExtra("action_id", appActionId)
+            startActivity(intent)
+        }
+
         findViewById<MaterialCardView>(R.id.cardBildirim).setOnClickListener { }
     }
 
-    private fun loadLastAction() {
+    private fun loadLastActions() {
         val database = AppDatabase.getDatabase(this)
         lifecycleScope.launch {
             val actions = database.actionDao().getActionsByScenarioSync(scenarioId)
-            val lastSilentAction = actions.lastOrNull { it.type == "SILENT_MODE" }
-            actionId = lastSilentAction?.id ?: 0
-            Log.d("ActionsActivity", "En son SILENT actionId: $actionId")
+            silentActionId = actions.lastOrNull { it.type == ACTION_TYPE_SILENT }?.id ?: 0
+            appActionId = actions.lastOrNull { it.type == AppActionSetupActivity.ACTION_TYPE_APP_LAUNCH }?.id ?: 0
+            Log.d(TAG, "Last silent actionId: $silentActionId, app actionId: $appActionId")
         }
+    }
 
-
+    companion object {
+        private const val TAG = "ActionsActivity"
+        private const val ACTION_TYPE_SILENT = "SILENT_MODE"
     }
 }

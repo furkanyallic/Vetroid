@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+
     <!-- Location Permissions for Geofence -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -52,6 +59,12 @@
             android:exported="false" />
         <activity
             android:name=".TimeSetupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AppActionSetupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AppPickerActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

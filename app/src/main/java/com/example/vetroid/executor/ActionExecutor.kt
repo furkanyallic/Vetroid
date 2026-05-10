@@ -1,8 +1,10 @@
 package com.example.vetroid.executor
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
 import android.util.Log
@@ -14,15 +16,18 @@ class ActionExecutor(private val context: Context) {
     companion object {
         const val TAG = "ActionExecutor"
         const val ACTION_TYPE_SILENT = "SILENT_MODE"
+        const val ACTION_TYPE_APP_LAUNCH = "APP_LAUNCH"
+        const val ACTION_TYPE_APP_CLOSE = "APP_CLOSE"
     }
 
     fun executeAction(action: Action) {
-        Log.d(TAG, "Action yürütülüyor: ${action.type}")
+        Log.d(TAG, "Executing action: ${action.type}")
 
         when (action.type) {
             ACTION_TYPE_SILENT -> executeSilentMode(action.params)
-            // Diğer action tipleri buraya eklenecek
-            else -> Log.w(TAG, "Bilinmeyen action tipi: ${action.type}")
+            ACTION_TYPE_APP_LAUNCH -> executeAppLaunch(action.params)
+            ACTION_TYPE_APP_CLOSE -> executeAppClose(action.params)
+            else -> Log.w(TAG, "Unknown action type: ${action.type}")
         }
     }
 
@@ -35,34 +40,75 @@ class ActionExecutor(private val context: Context) {
 
             when (mode) {
                 "SILENT" -> {
-                    // Sessiz moda geç
                     audioManager.ringerMode = AudioManager.RINGER_MODE_SILENT
-                    Log.d(TAG, "✅ Telefon sessize alındı")
-                    showNotification("Sessize Alındı", "Telefon sessiz moda geçti")
+                    Log.d(TAG, "Phone switched to silent mode")
+                    showNotification("Sessize Alindi", "Telefon sessiz moda gecti")
                 }
                 "NORMAL" -> {
-                    // Normal moda geç
                     audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
-                    Log.d(TAG, "✅ Telefon sesten çıkarıldı")
-                    showNotification("Sesten Çıkarıldı", "Telefon normal moda geçti")
+                    Log.d(TAG, "Phone switched to normal mode")
+                    showNotification("Ses Acildi", "Telefon normal moda gecti")
                 }
                 "VIBRATE" -> {
-                    // Titreşim moduna geç
                     audioManager.ringerMode = AudioManager.RINGER_MODE_VIBRATE
-                    Log.d(TAG, "✅ Telefon titreşim moduna alındı")
-                    showNotification("Titreşim Modu", "Telefon titreşim moda geçti")
+                    Log.d(TAG, "Phone switched to vibrate mode")
+                    showNotification("Titresim Modu", "Telefon titresim moduna gecti")
                 }
-                else -> Log.w(TAG, "Bilinmeyen mod: $mode")
+                else -> Log.w(TAG, "Unknown ringer mode: $mode")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Sessiz mod hatası: ${e.message}", e)
+            Log.e(TAG, "Silent mode error: ${e.message}", e)
+        }
+    }
+
+    private fun executeAppLaunch(paramsJson: String) {
+        try {
+            val params = ActionParams.fromJson(paramsJson)
+            val packageName = params.packageName
+
+            if (packageName.isNullOrEmpty()) {
+                Log.e(TAG, "Package name is empty, app cannot be launched")
+                return
+            }
+
+            val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
+            if (launchIntent != null) {
+                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(launchIntent)
+                Log.d(TAG, "App launched: $packageName")
+                showNotification("Uygulama Acildi", "Uygulama baslatildi: $packageName")
+            } else {
+                Log.e(TAG, "No launch intent found for app: $packageName")
+                showNotification("Uygulama Acilamadi", "Uygulama baslatilamadi: $packageName")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "App launch error: ${e.message}", e)
+            showNotification("Uygulama Acilamadi", e.message ?: "Uygulama baslatilirken hata olustu")
+        }
+    }
+
+    private fun executeAppClose(paramsJson: String) {
+        try {
+            val params = ActionParams.fromJson(paramsJson)
+            val packageName = params.packageName
+
+            if (packageName.isNullOrEmpty()) {
+                Log.e(TAG, "Package name is empty, app cannot be closed")
+                return
+            }
+
+            val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+            activityManager.killBackgroundProcesses(packageName)
+            Log.d(TAG, "App close requested: $packageName")
+            showNotification("Uygulama Kapatildi", "Uygulama durduruldu: $packageName")
+        } catch (e: Exception) {
+            Log.e(TAG, "App close error: ${e.message}", e)
         }
     }
 
     private fun showNotification(title: String, message: String) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Android 8.0+ için kanal oluştur
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 "vetroid_actions",
@@ -74,11 +120,16 @@ class ActionExecutor(private val context: Context) {
             notificationManager.createNotificationChannel(channel)
         }
 
-        val notification = android.app.Notification.Builder(context, "vetroid_actions")
+        val notification = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder(context, "vetroid_actions")
+        } else {
+            @Suppress("DEPRECATION")
+            Notification.Builder(context)
+        }
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(title)
             .setContentText(message)
-            .setPriority(android.app.Notification.PRIORITY_DEFAULT)
+            .setPriority(Notification.PRIORITY_DEFAULT)
             .build()
 
         notificationManager.notify(1, notification)
