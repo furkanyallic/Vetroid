@@ -8,6 +8,8 @@ import android.content.Intent
 import android.util.Log
 import com.example.vetroid.data.AppDatabase
 import com.example.vetroid.executor.ActionExecutor
+import com.example.vetroid.executor.ConstraintChecker
+import com.example.vetroid.executor.LogHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -112,7 +114,15 @@ class TimeTriggerReceiver : BroadcastReceiver() {
                     return@launch
                 }
 
-                Log.d(TAG, "Senaryo bulundu: ${scenario.name}, action'lar aranıyor...")
+                Log.d(TAG, "Senaryo bulundu: ${scenario.name}, kısıtlamalar kontrol ediliyor...")
+
+                // Kısıtlamaları kontrol et
+                val constraints = database.constraintDao().getConstraintsByScenarioSync(scenario.id)
+                if (!ConstraintChecker(context).checkAll(constraints)) {
+                    Log.d(TAG, "Kısıtlama karşılanmadı, senaryo atlandı")
+                    LogHelper.log(database, scenario.id, scenario.name, "TIME", false, "Kısıtlama engelledi")
+                    return@launch
+                }
 
                 // Senaryonun action'larını çek
                 val actions = database.actionDao().getActionsByScenarioSync(scenario.id)
@@ -126,6 +136,9 @@ class TimeTriggerReceiver : BroadcastReceiver() {
                         executor.executeAction(action)
                     }
                 }
+
+                LogHelper.log(database, scenario.id, scenario.name, "TIME", true)
+                Log.d(TAG, "✅ Log kaydedildi: ${scenario.name}")
 
             } catch (e: Exception) {
                 Log.e(TAG, "❌ Action çalıştırma hatası: ${e.message}", e)

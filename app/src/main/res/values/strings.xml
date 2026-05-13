@@ -7,4 +7,5 @@
     <string name="nav_home">Yuva</string>
     <string name="nav_macros">Makrolar</string>
     <string name="nav_settings">Ayarlar</string>
+    <string name="accessibility_service_description">Vetroid otomasyon eylemi olarak ekran görüntüsü alır</string>
 </resources>

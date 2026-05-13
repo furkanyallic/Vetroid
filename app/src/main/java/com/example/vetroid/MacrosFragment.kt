@@ -1,59 +1,96 @@
 package com.example.vetroid
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.vetroid.data.AppDatabase
+import com.example.vetroid.data.ExecutionLog
+import com.example.vetroid.databinding.FragmentMacrosBinding
+import com.example.vetroid.executor.ActionExecutor
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MacrosFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class MacrosFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentMacrosBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_macros, container, false)
+    ): View {
+        _binding = FragmentMacrosBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MacrosFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MacrosFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val database = AppDatabase.getDatabase(requireContext())
+
+        val adapter = ScenarioAdapter(
+            onToggle = { scenario, isActive ->
+                lifecycleScope.launch {
+                    database.scenarioDao().setActive(scenario.id, isActive)
+                }
+            },
+            onDelete = { scenario ->
+                lifecycleScope.launch {
+                    database.scenarioDao().delete(scenario)
+                }
+            },
+            onEdit = { scenario ->
+                val intent = Intent(requireContext(), AddMacroActivity::class.java).apply {
+                    putExtra("scenario_id", scenario.id)
+                }
+                startActivity(intent)
+            },
+            onTest = { scenario ->
+                lifecycleScope.launch {
+                    val actions = database.actionDao().getActionsByScenarioSync(scenario.id)
+                    if (actions.isEmpty()) {
+                        Toast.makeText(requireContext(), "Bu makroda eylem yok", Toast.LENGTH_SHORT).show()
+                        return@launch
+                    }
+                    val executor = ActionExecutor(requireContext())
+                    actions.forEach { executor.executeAction(it) }
+                    database.executionLogDao().insert(
+                        ExecutionLog(
+                            scenarioId = scenario.id,
+                            scenarioName = scenario.name,
+                            triggerType = "MANUAL",
+                            success = true
+                        )
+                    )
+                    Toast.makeText(requireContext(), "\"${scenario.name}\" test edildi", Toast.LENGTH_SHORT).show()
                 }
             }
+        )
+
+        binding.rvScenarios.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvScenarios.adapter = adapter
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                database.scenarioDao().getAllScenarios().collect { scenarios ->
+                    adapter.submitList(scenarios)
+                    val isEmpty = scenarios.isEmpty()
+                    binding.layoutEmpty.visibility = if (isEmpty) View.VISIBLE else View.GONE
+                    binding.rvScenarios.visibility = if (isEmpty) View.GONE else View.VISIBLE
+                }
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

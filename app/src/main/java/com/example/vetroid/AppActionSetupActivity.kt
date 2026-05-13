@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
@@ -17,7 +16,7 @@ import com.example.vetroid.data.AppDatabase
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 
-class AppActionSetupActivity : AppCompatActivity() {
+class AppActionSetupActivity : BaseActivity() {
 
     private lateinit var database: AppDatabase
     private var scenarioId: Long = 0

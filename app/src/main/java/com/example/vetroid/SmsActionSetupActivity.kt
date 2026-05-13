@@ -12,7 +12,6 @@ import android.text.TextWatcher
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -21,7 +20,7 @@ import com.example.vetroid.data.ActionParams
 import com.example.vetroid.data.AppDatabase
 import kotlinx.coroutines.launch
 
-class SmsActionSetupActivity : AppCompatActivity() {
+class SmsActionSetupActivity : BaseActivity() {
 
     private lateinit var database: AppDatabase
     private var scenarioId: Long = 0

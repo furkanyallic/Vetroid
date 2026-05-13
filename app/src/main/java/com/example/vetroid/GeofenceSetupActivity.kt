@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -26,7 +25,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class GeofenceSetupActivity : AppCompatActivity(), OnMapReadyCallback {
+class GeofenceSetupActivity : BaseActivity(), OnMapReadyCallback {
 
     private lateinit var binding: ActivityGeofenceSetupBinding
     private var googleMap: GoogleMap? = null

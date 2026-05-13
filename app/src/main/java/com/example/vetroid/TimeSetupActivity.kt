@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import com.example.vetroid.data.AppDatabase
@@ -19,7 +18,7 @@ import com.example.vetroid.trigger.TimeTriggerManager
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class TimeSetupActivity : AppCompatActivity() {
+class TimeSetupActivity : BaseActivity() {
 
     private lateinit var binding: ActivityTimeSetupBinding
     private lateinit var database: AppDatabase

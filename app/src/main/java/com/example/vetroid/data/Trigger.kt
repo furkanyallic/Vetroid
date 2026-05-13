@@ -21,7 +21,7 @@ data class Trigger(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val scenarioId: Long,
-    val type: String, // "GEOFENCE", "TIME", "BATTERY", "APP"
+    val type: String, // "GEOFENCE", "TIME", "BATTERY", "APP", "SHAKE"
     val params: String, // JSON string: {"latitude": 39.92, "longitude": 32.85, "radius": 200, "transition": "ENTER"}
     val isActive: Boolean = true
 )
