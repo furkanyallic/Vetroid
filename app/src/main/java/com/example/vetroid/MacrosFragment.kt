@@ -13,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.vetroid.data.AppDatabase
 import com.example.vetroid.data.ExecutionLog
+import com.example.vetroid.data.Scenario
 import com.example.vetroid.databinding.FragmentMacrosBinding
 import com.example.vetroid.executor.ActionExecutor
 import kotlinx.coroutines.launch
@@ -23,7 +24,8 @@ class MacrosFragment : Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMacrosBinding.inflate(inflater, container, false)
@@ -80,13 +82,30 @@ class MacrosFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 database.scenarioDao().getAllScenarios().collect { scenarios ->
-                    adapter.submitList(scenarios)
+                    val items = scenarios.map { scenario -> buildItem(database, scenario) }
+                    adapter.submitList(items)
                     val isEmpty = scenarios.isEmpty()
                     binding.layoutEmpty.visibility = if (isEmpty) View.VISIBLE else View.GONE
                     binding.rvScenarios.visibility = if (isEmpty) View.GONE else View.VISIBLE
                 }
             }
         }
+    }
+
+    private suspend fun buildItem(
+        database: AppDatabase,
+        scenario: Scenario
+    ): ScenarioAdapter.ScenarioItem {
+        val triggers = database.triggerDao().getTriggersByScenarioSync(scenario.id)
+        val constraints = database.constraintDao().getConstraintsByScenarioSync(scenario.id)
+        val actions = database.actionDao().getActionsByScenarioSync(scenario.id)
+
+        return ScenarioAdapter.ScenarioItem(
+            scenario = scenario,
+            triggerType = triggers.lastOrNull()?.type,
+            constraintType = constraints.lastOrNull()?.type,
+            actionType = actions.lastOrNull()?.type
+        )
     }
 
     override fun onDestroyView() {

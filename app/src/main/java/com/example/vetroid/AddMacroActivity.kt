@@ -8,6 +8,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import com.example.vetroid.data.Action
@@ -59,8 +61,15 @@ class AddMacroActivity : BaseActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener {
-            discardAndExit()
+            confirmExit()
         }
+
+        // Donanım/sistem geri tuşunda da onay sor
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                confirmExit()
+            }
+        })
 
         // Makro İsmini Al
         val etMacroName = findViewById<TextInputEditText>(R.id.etMacroName)
@@ -97,6 +106,29 @@ class AddMacroActivity : BaseActivity() {
         btnAddConstraint.setOnClickListener {
             navigateToActivity(ConstraintsActivity::class.java, etMacroName)
         }
+    }
+
+    private fun confirmExit() {
+        val etMacroName = findViewById<TextInputEditText>(R.id.etMacroName)
+        val macroName = etMacroName.text?.toString()?.trim().orEmpty()
+
+        // İsim boşsa direkt çık (yeni senaryo taslağını temizle)
+        if (macroName.isEmpty()) {
+            discardAndExit()
+            return
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Değişiklikleri Kaydet")
+            .setMessage("Makroyu kaydetmek ister misiniz?")
+            .setPositiveButton("Kaydet") { _, _ ->
+                saveMacroAndExit(etMacroName)
+            }
+            .setNegativeButton("Kaydetme") { _, _ ->
+                discardAndExit()
+            }
+            .setNeutralButton("İptal", null)
+            .show()
     }
 
     private fun saveMacroAndExit(etMacroName: TextInputEditText) {
@@ -148,11 +180,13 @@ class AddMacroActivity : BaseActivity() {
         prefs.edit()
             .remove(KEY_SCENARIO_ID)
             .remove(KEY_MACRO_NAME)
+            .remove(KEY_GEOFENCE_TRIGGER_ID)
+            .remove(KEY_TIME_TRIGGER_ID)
             .apply()
     }
 
     private fun navigateToActivity(
-        activityClass: Class<*>, 
+        activityClass: Class<*>,
         etMacroName: TextInputEditText,
         triggerType: String? = null
     ) {
@@ -163,13 +197,11 @@ class AddMacroActivity : BaseActivity() {
             return
         }
 
-        // Kaydedilmiş makro ismini al
         val savedMacroName = prefs.getString(KEY_MACRO_NAME, "")
 
-        // İsim değişti mi? Değiştiyse YENİ senaryo oluştur
         if (macroName != savedMacroName) {
             scenarioId = 0
-            android.util.Log.d("AddMacroActivity", "📝 İsim değişti ($savedMacroName → $macroName), yeni senaryo oluşturulacak")
+            android.util.Log.d("AddMacroActivity", "📝 İsim değişti, yeni senaryo oluşturulacak")
         }
 
         lifecycleScope.launch {
@@ -200,20 +232,16 @@ class AddMacroActivity : BaseActivity() {
                     }
                 }
 
-                // Hem scenarioId'yi hem makro ismini kaydet
                 prefs.edit()
                     .putLong(KEY_SCENARIO_ID, scenarioId)
                     .putString(KEY_MACRO_NAME, macroName)
                     .apply()
 
-                // Mevcut trigger var mı kontrol et (varsa ID'sini gönder ve kaydet)
                 var existingTriggerId = 0L
                 if (triggerType != null) {
                     val existingTrigger = database.triggerDao().getTriggerByScenarioAndType(scenarioId, triggerType)
                     existingTriggerId = existingTrigger?.id ?: 0L
-                    android.util.Log.d("AddMacroActivity", "✅ Mevcut Trigger ID: $existingTriggerId (Tür: $triggerType)")
-                    
-                    // Trigger ID'yi SharedPreferences'a kaydet
+
                     if (triggerType == "GEOFENCE") {
                         prefs.edit().putLong(KEY_GEOFENCE_TRIGGER_ID, existingTriggerId).apply()
                     } else if (triggerType == "TIME") {
