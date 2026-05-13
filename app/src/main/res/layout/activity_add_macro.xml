@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:fitsSystemWindows="true"
+    android:background="?android:attr/windowBackground"
     tools:context=".AddMacroActivity">
 
     <!-- Toolbar -->
@@ -13,7 +14,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:background="#5B40A2"
         app:titleTextColor="@android:color/white"
         app:title="Makro Ekle"
         app:navigationIcon="@drawable/ic_arrow_back"
@@ -39,16 +40,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:maxLength="50" />
+            android:maxLength="50"
+            android:textColor="?android:attr/textColorPrimary"/>
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSaveMacro"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="12dp"
+        android:text="Makroyu Ekle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <!-- ScrollView for Content -->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnSaveMacro"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tilMacroName">
@@ -71,7 +84,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#42988a"
+                    android:background="#AA8DF2"
                     android:orientation="vertical">
                     <!-- Header -->
                     <LinearLayout
@@ -107,12 +120,21 @@
                         android:background="@android:color/white" />
 
                     <TextView
+                        android:id="@+id/tvNoTriggers"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
                         android:gravity="center"
                         android:text="Hiç Tetikleyici Yok"
                         android:textColor="@android:color/white"
                         android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:id="@+id/llTriggerItems"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingBottom="8dp"
+                        android:visibility="gone" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -128,7 +150,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#42988a"
+                    android:background="#AA8DF2"
                     android:orientation="vertical">
                     <!-- Header -->
                     <LinearLayout
@@ -164,12 +186,21 @@
                         android:background="@android:color/white" />
 
                     <TextView
+                        android:id="@+id/tvNoActions"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
                         android:gravity="center"
                         android:text="Hiç Eylem Yok"
                         android:textColor="@android:color/white"
                         android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:id="@+id/llActionItems"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingBottom="8dp"
+                        android:visibility="gone" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -185,7 +216,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#42988a"
+                    android:background="#AA8DF2"
                     android:orientation="vertical">
                     <!-- Header -->
                     <LinearLayout
@@ -221,12 +252,21 @@
                         android:background="@android:color/white" />
 
                     <TextView
+                        android:id="@+id/tvNoConstraints"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
                         android:gravity="center"
                         android:text="Hiç Kısıtlama Yok"
                         android:textColor="@android:color/white"
                         android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:id="@+id/llConstraintItems"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingBottom="8dp"
+                        android:visibility="gone" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

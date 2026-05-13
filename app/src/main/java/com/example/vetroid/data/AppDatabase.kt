@@ -6,8 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [Scenario::class, Trigger::class, Action::class],
-    version = 2,
+    entities = [Scenario::class, Trigger::class, Action::class, Constraint::class, ExecutionLog::class],
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -15,6 +15,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun scenarioDao(): ScenarioDao
     abstract fun triggerDao(): TriggerDao
     abstract fun actionDao(): ActionDao
+    abstract fun constraintDao(): ConstraintDao
+    abstract fun executionLogDao(): ExecutionLogDao
 
     companion object {
         @Volatile

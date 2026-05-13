@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Telefon gövdesi -->
+    <path
+        android:fillColor="#6c2e7c"
+        android:pathData="M15,1H9C7.34,1 6,2.34 6,4V20C6,21.66 7.34,23 9,23H15C16.66,23 18,21.66 18,20V4C18,2.34 16.66,1 15,1ZM16,20C16,20.55 15.55,21 15,21H9C8.45,21 8,20.55 8,20V4C8,3.45 8.45,3 9,3H15C15.55,3 16,3.45 16,4V20Z"/>
+    <!-- Sol titreşim çizgisi -->
+    <path
+        android:fillColor="#6c2e7c"
+        android:pathData="M4.41,8.59C3.53,9.88 3,11.38 3,13C3,14.62 3.53,16.12 4.41,17.41L5.83,15.99C5.29,15.12 5,14.1 5,13C5,11.9 5.29,10.88 5.83,10.01L4.41,8.59Z"/>
+    <!-- Sağ titreşim çizgisi -->
+    <path
+        android:fillColor="#6c2e7c"
+        android:pathData="M19.59,8.59L18.17,10.01C18.71,10.88 19,11.9 19,13C19,14.1 18.71,15.12 18.17,15.99L19.59,17.41C20.47,16.12 21,14.62 21,13C21,11.38 20.47,9.88 19.59,8.59Z"/>
+</vector>

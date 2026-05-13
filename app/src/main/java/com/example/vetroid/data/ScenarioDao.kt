@@ -18,6 +18,9 @@ interface ScenarioDao {
     @Query("SELECT * FROM scenarios WHERE id = :id")
     suspend fun getScenarioById(id: Long): Scenario?
 
+    @Query("SELECT * FROM scenarios WHERE name = :name LIMIT 1")
+    suspend fun getScenarioByName(name: String): Scenario?
+
     @Insert
     suspend fun insert(scenario: Scenario): Long
 

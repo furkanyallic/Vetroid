@@ -3,7 +3,6 @@ package com.example.vetroid
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import com.example.vetroid.data.Action
@@ -11,7 +10,7 @@ import com.example.vetroid.data.ActionParams
 import com.example.vetroid.data.AppDatabase
 import kotlinx.coroutines.launch
 
-class ActionSetupActivity : AppCompatActivity() {
+class ActionSetupActivity : BaseActivity() {
 
     private lateinit var database: AppDatabase
     private var scenarioId: Long = 0

@@ -6,6 +6,8 @@ import org.json.JSONObject
 data class ActionParams(
     val mode: String? = null,
     val wifiEnabled: Boolean? = null,
+    val bluetoothEnabled: Boolean? = null,
+    val brightness: Int? = null,       // -1 = otomatik, 0-255 = manuel
     val packageName: String? = null,
     val notificationTitle: String? = null,
     val notificationMessage: String? = null,
@@ -17,6 +19,8 @@ data class ActionParams(
         return JSONObject().apply {
             mode?.let { put("mode", it) }
             wifiEnabled?.let { put("wifiEnabled", it) }
+            bluetoothEnabled?.let { put("bluetoothEnabled", it) }
+            brightness?.let { put("brightness", it) }
             packageName?.let { put("packageName", it) }
             notificationTitle?.let { put("notificationTitle", it) }
             notificationMessage?.let { put("notificationMessage", it) }
@@ -35,6 +39,8 @@ data class ActionParams(
                 ActionParams(
                     mode = obj.optString("mode").takeIf { it.isNotEmpty() },
                     wifiEnabled = if (obj.has("wifiEnabled")) obj.getBoolean("wifiEnabled") else null,
+                    bluetoothEnabled = if (obj.has("bluetoothEnabled")) obj.getBoolean("bluetoothEnabled") else null,
+                    brightness = if (obj.has("brightness")) obj.getInt("brightness") else null,
                     packageName = obj.optString("packageName").takeIf { it.isNotEmpty() },
                     notificationTitle = obj.optString("notificationTitle").takeIf { it.isNotEmpty() },
                     notificationMessage = obj.optString("notificationMessage").takeIf { it.isNotEmpty() },

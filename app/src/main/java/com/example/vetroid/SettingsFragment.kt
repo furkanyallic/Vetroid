@@ -1,59 +1,61 @@
 package com.example.vetroid
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.fragment.app.Fragment
+import com.google.android.material.button.MaterialButton
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SettingsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SettingsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_settings, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SettingsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SettingsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val btnLight = view.findViewById<MaterialButton>(R.id.btn_light_theme)
+        val btnDark = view.findViewById<MaterialButton>(R.id.btn_dark_theme)
+
+        val prefs = requireContext().getSharedPreferences("vetroid_prefs", Context.MODE_PRIVATE)
+        val currentMode = prefs.getInt("night_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        updateButtonStates(btnLight, btnDark, currentMode)
+
+        btnLight.setOnClickListener {
+            applyTheme(AppCompatDelegate.MODE_NIGHT_NO, btnLight, btnDark, prefs)
+        }
+
+        btnDark.setOnClickListener {
+            applyTheme(AppCompatDelegate.MODE_NIGHT_YES, btnLight, btnDark, prefs)
+        }
+    }
+
+    private fun applyTheme(mode: Int, btnLight: MaterialButton, btnDark: MaterialButton, prefs: SharedPreferences) {
+        prefs.edit().putInt("night_mode", mode).apply()
+        updateButtonStates(btnLight, btnDark, mode)
+        AppCompatDelegate.setDefaultNightMode(mode)
+    }
+
+    private fun updateButtonStates(btnLight: MaterialButton, btnDark: MaterialButton, mode: Int) {
+        val isLight = mode == AppCompatDelegate.MODE_NIGHT_NO
+        val isDark = mode == AppCompatDelegate.MODE_NIGHT_YES
+
+        btnLight.alpha = if (isLight) 1f else 0.5f
+        btnDark.alpha = if (isDark) 1f else 0.5f
+
+        btnLight.strokeWidth = if (isLight) dpToPx(3) else dpToPx(1)
+        btnDark.strokeWidth = if (isDark) dpToPx(3) else dpToPx(1)
+    }
+
+    private fun dpToPx(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
     }
 }

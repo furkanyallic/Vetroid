@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\bedir\\\\Desktop\\\\Projeler\\\\Vetroidd\" -Directory -Force)",
+      "Bash(Select-Object Name)",
+      "Bash(./gradlew assembleDebug)"
+    ]
+  }
+}
